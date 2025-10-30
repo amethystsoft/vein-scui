@@ -3,12 +3,17 @@ import BetterSync
 
 @MainActor
 @propertyWrapper
-public struct Query<M: PersistentModel>: DynamicProperty {
-    public func update(with environment: SwiftCrossUI.EnvironmentValues, previousValue: Query<M>?) {}
+public class Query<M: PersistentModel>: @MainActor DynamicProperty {
+    public func update(with environment: SwiftCrossUI.EnvironmentValues, previousValue: Query<M>?) {
+        guard let context = environment[ContainerKey.self]?.context else {
+            fatalError("Missing model container in environment")
+        }
+        self.context = context
+    }
     
     public typealias WrappedType = [M]
     @State var queryObserver: QueryObserver<M>
-    @Environment(\.modelContext) var context
+    var context: ManagedObjectContext?
     
     public var wrappedValue: [M] {
         if let results = queryObserver.results {
@@ -16,7 +21,7 @@ public struct Query<M: PersistentModel>: DynamicProperty {
         }
         do {
             if queryObserver.results == nil && queryObserver.primaryObserver == nil {
-                queryObserver.initialize(with: context)
+                queryObserver.initialize(with: context!)
             }
             return (queryObserver.primaryObserver?.results ?? queryObserver.results ?? []).sorted(by: { $0.id! < $1.id! })
         } catch {
@@ -31,7 +36,6 @@ public struct Query<M: PersistentModel>: DynamicProperty {
 
 package final class QueryObserver<M: PersistentModel>: SwiftCrossUI.ObservableObject, @unchecked Sendable {
     typealias ModelType = M
-    public let objectWillChange = PassthroughSubject<Void, Never>()
     
     private var publishToEnclosingObserver: (() -> Void)?
     
@@ -61,7 +65,7 @@ package final class QueryObserver<M: PersistentModel>: SwiftCrossUI.ObservableOb
             let old = primary.publishToEnclosingObserver
             primary.publishToEnclosingObserver = { [weak self] in
                 old?()
-                self?.objectWillChange.send()
+                self?.didChange.send()
             }
         } else {
             fetchInitialResults(with: context)
@@ -82,7 +86,7 @@ package final class QueryObserver<M: PersistentModel>: SwiftCrossUI.ObservableOb
         // this triggers view updates on any other Query oberservers using the registered
         // Query as their source
         publishToEnclosingObserver?()
-        objectWillChange.send()
+        didChange.send()
     }
     
     @MainActor
@@ -99,16 +103,14 @@ package final class QueryObserver<M: PersistentModel>: SwiftCrossUI.ObservableOb
     package func handleUpdate(_ model: any PersistentModel, matchedBeforeChange: Bool) {
         guard let model = model as? ModelType else { return }
         if predicate.doesMatch(model) {
-            print("matches now and matched before: \(matchedBeforeChange)")
             if !matchedBeforeChange {
                 results?.append(model)
             }
         } else if matchedBeforeChange {
-            print("doesn't match now, gets removed")
             results?.removeAll(where: { $0.id == model.id })
         }
         publishToEnclosingObserver?()
-        objectWillChange.send()
+        didChange.send()
     }
     
     @MainActor
@@ -122,7 +124,7 @@ package final class QueryObserver<M: PersistentModel>: SwiftCrossUI.ObservableOb
         guard let model = model as? ModelType else { return }
         results?.removeAll(where: { $0.id! == model.id! })
         publishToEnclosingObserver?()
-        objectWillChange.send()
+        didChange.send()
     }
 }
 
@@ -151,12 +153,6 @@ extension EnvironmentValues {
     }
 }
 
-struct MOCEnvironment: EnvironmentKey {
-    static let defaultValue: BetterSync.ManagedObjectContext? = nil
-    
-    typealias Value = ManagedObjectContext?
-}
-
 public struct BetterSyncContainer<Content: View>: View {
     @Environment(\.modelContainer) private var container
     @State private var isInitialized: Bool = false
@@ -182,5 +178,11 @@ public struct BetterSyncContainer<Content: View>: View {
         } else {
             ProgressView()
         }
+    }
+}
+
+extension BetterSyncContainer {
+    public func modelContainer(_ container: BetterSync.ModelContainer) -> some View {
+        self.environment(key: ContainerKey.self, value: container)
     }
 }

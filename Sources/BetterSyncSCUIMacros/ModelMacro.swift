@@ -111,7 +111,9 @@ public struct ModelMacro: MemberMacro, ExtensionMacro, PeerMacro {
     @PrimaryKey
     var id: Int64?
     
-    let objectWillChange = PassthroughSubject<Void, Never>()
+    var notifyOfChanges: () -> Void {
+        didChange.send
+    }
     
     required init(id: Int64, fields: [String: BetterSync.SQLiteValue]) {
         self.id = id

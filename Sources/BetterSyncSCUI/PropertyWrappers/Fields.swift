@@ -62,7 +62,7 @@ public final class LazyField<T: Persistable>: PersistedField, @unchecked Sendabl
                 lock.withLock {
                     useStore = true
                     store = newValue
-                    model?.objectWillChange.send()
+                    model?.notifyOfChanges()
                 }
             }
         }
@@ -82,7 +82,7 @@ public final class LazyField<T: Persistable>: PersistedField, @unchecked Sendabl
     
     public func setValue(to newValue: T?) {
         self.store = newValue
-        model?.objectWillChange.send()
+        model?.notifyOfChanges()
     }
 }
 
@@ -131,7 +131,7 @@ public final class Field<T: Persistable>: PersistedField, @unchecked Sendable {
             } else {
                 lock.withLock {
                     store = newValue
-                    model?.objectWillChange.send()
+                    model?.notifyOfChanges()
                 }
             }
         }
@@ -144,6 +144,6 @@ public final class Field<T: Persistable>: PersistedField, @unchecked Sendable {
     
     public func setValue(to newValue: T) {
         self.store = newValue
-        model?.objectWillChange.send()
+        model?.notifyOfChanges()
     }
 }
