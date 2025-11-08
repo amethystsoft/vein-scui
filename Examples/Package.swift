@@ -5,8 +5,8 @@ import PackageDescription
 let exampleDependencies: [Target.Dependency] = [
     .product(name: "SwiftCrossUI", package: "swift-cross-ui"),
     .product(name: "DefaultBackend", package: "swift-cross-ui"),
-    .byName(name: "BetterSyncSCUI"),
-    .byName(name: "BetterSync"),
+    .product(name: "BetterSyncSCUI", package: "bettersyncscui"),
+    .product(name: "BetterSync", package: "bettersync"),
 ]
 
 let package = Package(
