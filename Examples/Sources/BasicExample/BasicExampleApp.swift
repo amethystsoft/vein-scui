@@ -1,16 +1,11 @@
-//
-//  BetterSyncSCUITestApp.swift
-//  BetterSyncSCUITest
-//
-//  Created by Mia Koring on 29.10.25.
 import Foundation
 import SwiftCrossUI
 import DefaultBackend
-import BetterSync
-import BetterSyncSCUI
+import Vein
+import VeinSCUI
 
 @main
-struct BetterSyncTestEnvironmentApp: App {
+struct VeinTestEnvironmentApp: App {
     @State var toggleQueries = false
     let modelContainer: ModelContainer
     
@@ -49,8 +44,8 @@ struct BetterSyncTestEnvironmentApp: App {
     }
     
     var body: some Scene {
-        WindowGroup("BetterSyncTest") {
-            BetterSyncContainer {
+        WindowGroup("VeinTest") {
+            VeinContainer {
                 HStack {
                     ContentView()
                     #if !canImport(UIKit)

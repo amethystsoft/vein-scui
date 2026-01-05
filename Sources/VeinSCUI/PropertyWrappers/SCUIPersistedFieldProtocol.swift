@@ -1,7 +1,7 @@
 import SwiftCrossUI
-import BetterSync
+import Vein
 
-protocol SCUIPersistedField: BetterSync.PersistedField, ObservableObject, PublishedMarkerProtocol {
+protocol SCUIPersistedField: Vein.PersistedField, ObservableObject, PublishedMarkerProtocol {
     var upstreamLinkCancellable: Cancellable? { get set }
 }
 extension SCUIPersistedField {

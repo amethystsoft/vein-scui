@@ -1,14 +1,8 @@
-//
-//  ContentView.swift
-//  BetterSyncSCUITest
-//
-//  Created by Mia Koring on 29.10.25.
-//
 import Foundation
 import SwiftCrossUI
 import DefaultBackend
-import BetterSync
-import BetterSyncSCUI
+import Vein
+import VeinSCUI
 
 struct ContentView: View {
     @Query
@@ -67,7 +61,7 @@ struct ObservedTextField: View {
     var item: Test
     
     var body: some View {
-        Toggle("", active: item.$flag)
+        Toggle("", isOn: item.$flag)
         TextField("edit", text: item.$testEncryption.decrypted)
         Picker(of: Group.allCases, selection: item.$selectedGroup)
     }
@@ -79,7 +73,7 @@ struct TestModelDisplay: View {
     var body: some View {
         VStack {
             HStack {
-                Toggle("", active: item.$flag)
+                Toggle("", isOn: item.$flag)
                 Text("\(item.id ?? -1)")
                 Text(item.selectedGroup?.rawValue ?? "none")
                 Text(item.testEncryption.wrappedValue)

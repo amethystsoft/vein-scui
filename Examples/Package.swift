@@ -5,8 +5,8 @@ import PackageDescription
 let exampleDependencies: [Target.Dependency] = [
     .product(name: "SwiftCrossUI", package: "swift-cross-ui"),
     .product(name: "DefaultBackend", package: "swift-cross-ui"),
-    .product(name: "BetterSyncSCUI", package: "bettersyncscui"),
-    .product(name: "BetterSync", package: "bettersync"),
+    .product(name: "VeinSCUI", package: "vein-scui"),
+    .product(name: "Vein", package: "vein"),
 ]
 
 let package = Package(
@@ -14,12 +14,12 @@ let package = Package(
     platforms:  [.macOS(.v13), .iOS(.v16), .tvOS(.v16), .macCatalyst(.v16), .visionOS(.v1)],
     dependencies: [
         .package(
-            url: "https://github.com/miakoring/swift-cross-ui",
-            branch: "usemylatestchanges"
+            url: "https://github.com/stackotter/swift-cross-ui",
+            branch: "main"
         ),
         .package(path: "../"),
-        //.package(path: "../../BetterSync"),
-        .package(url: "https://github.com/miakoring/BetterSync", branch: "main"),
+        .package(path: "../../Vein"),
+        //.package(url: "https://github.com/amethystsoft/vein", branch: "main"),
     ],
     targets: [
         .executableTarget(

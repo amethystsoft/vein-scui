@@ -1,5 +1,5 @@
 import SwiftCrossUI
-import BetterSync
+import Vein
 import Foundation
 
 @MainActor
@@ -137,15 +137,14 @@ package final class QueryObserver<M: PersistentModel>: @unchecked Sendable {
     }
 }
 
-@MainActor
-extension QueryObserver: AnyQueryObserver {}
+extension QueryObserver: @MainActor AnyQueryObserver {}
 
 public struct ContainerKey: EnvironmentKey {
-    public static let defaultValue: BetterSync.ModelContainer? = nil
+    public static let defaultValue: Vein.ModelContainer? = nil
 }
 
 extension EnvironmentValues {
-    public var modelContainer: BetterSync.ModelContainer? {
+    public var modelContainer: Vein.ModelContainer? {
         get {
             self[ContainerKey.self]
         }
@@ -162,7 +161,7 @@ extension EnvironmentValues {
     }
 }
 
-public struct BetterSyncContainer<Content: View>: View {
+public struct VeinContainer<Content: View>: View {
     @Environment(\.modelContainer) private var container
     @State private var isInitialized: Bool = false
     private let content: () -> Content
@@ -190,8 +189,8 @@ public struct BetterSyncContainer<Content: View>: View {
     }
 }
 
-extension BetterSyncContainer {
-    public func modelContainer(_ container: BetterSync.ModelContainer) -> some View {
-        self.environment(key: ContainerKey.self, value: container)
+extension VeinContainer {
+    public func modelContainer(_ container: Vein.ModelContainer) -> some View {
+        self.environment(\.modelContainer, container)
     }
 }

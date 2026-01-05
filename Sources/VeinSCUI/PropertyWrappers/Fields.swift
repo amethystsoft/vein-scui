@@ -1,5 +1,5 @@
 import Foundation
-import BetterSync
+import Vein
 import SwiftCrossUI
 
 @propertyWrapper

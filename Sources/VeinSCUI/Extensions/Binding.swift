@@ -1,5 +1,5 @@
 import SwiftCrossUI
-import BetterSync
+import Vein
 
 public extension Binding where Value: EncryptedValueType {
     var decrypted: Binding<Value.WrappedType> {

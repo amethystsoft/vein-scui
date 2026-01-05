@@ -5,31 +5,31 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "BetterSyncSCUI",
+    name: "amethyst-vein-scui",
     platforms: [.macOS(.v13), .iOS(.v16), .tvOS(.v16), .macCatalyst(.v16), .visionOS(.v1)],
     products: [
         .library(
-            name: "BetterSyncSCUI",
-            targets: ["BetterSyncSCUI", "BetterSyncSCUIMacros"]
+            name: "VeinSCUI",
+            targets: ["VeinSCUI", "VeinSCUIMacros"]
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/miakoring/BetterSync", branch: "main"),
-        //.package(name: "BetterSync", path: "../BetterSync"),
+        //.package(url: "https://github.com/amethystsoft/vein", branch: "main"),
+        .package(name: "Vein", path: "../vein"),
         .package(url: "https://github.com/swiftlang/swift-syntax.git", "600.0.0" ..< "601.0.0"),
-        .package(url: "https://github.com/miakoring/swift-cross-ui.git", branch: "usemylatestchanges"),
+        .package(url: "https://github.com/stackotter/swift-cross-ui.git", branch: "main"),
     ],
     targets: [
         .target(
-            name: "BetterSyncSCUI",
+            name: "VeinSCUI",
             dependencies: [
-                "BetterSyncSCUIMacros",
-                .byName(name: "BetterSync"),
+                "VeinSCUIMacros",
+                .byName(name: "Vein"),
                 .product(name: "SwiftCrossUI", package: "swift-cross-ui"),
             ]
         ),
         .macro(
-            name: "BetterSyncSCUIMacros",
+            name: "VeinSCUIMacros",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
@@ -37,8 +37,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "BetterSyncSCUITests",
-            dependencies: ["BetterSyncSCUI"]
+            name: "VeinSCUITests",
+            dependencies: ["VeinSCUI"]
         ),
     ]
 )

@@ -95,11 +95,11 @@ public struct ModelMacro: MemberMacro, ExtensionMacro, PeerMacro {
         
         var fieldInformation = lazyFields.map { key, value in
             let value = value.drop(while: { $0 == " " || $0 == ":" })
-            return "BetterSync.FieldInformation(\(value).sqliteTypeName, \"\(key)\", false)"
+            return "Vein.FieldInformation(\(value).sqliteTypeName, \"\(key)\", false)"
         }
         fieldInformation.append(contentsOf: eagerFields.map { key, value in
             let value = value.drop(while: { $0 == " " || $0 == ":" })
-            return "BetterSync.FieldInformation(\(value).sqliteTypeName, \"\(key)\", true)"
+            return "Vein.FieldInformation(\(value).sqliteTypeName, \"\(key)\", true)"
         })
         
         let fieldInformationString = fieldInformation.joined(separator: ",\n        ")
@@ -114,7 +114,7 @@ public struct ModelMacro: MemberMacro, ExtensionMacro, PeerMacro {
         didChange.send
     }
     
-    required init(id: Int64, fields: [String: BetterSync.SQLiteValue]) {
+    required init(id: Int64, fields: [String: Vein.SQLiteValue]) {
         self.id = id
         \(eagerVarInit)
         setupFields()
@@ -130,8 +130,8 @@ public struct ModelMacro: MemberMacro, ExtensionMacro, PeerMacro {
         return Self.schema
     }
 
-    var context: BetterSync.ManagedObjectContext? = nil
-    var _fields: [any BetterSync.PersistedField] {
+    var context: Vein.ManagedObjectContext? = nil
+    var _fields: [any Vein.PersistedField] {
         [
             \(fieldAccessorSetup)
         ]
@@ -209,13 +209,13 @@ public struct ModelMacro: MemberMacro, ExtensionMacro, PeerMacro {
         
         let methods = fieldNamesAndTypes.map { (name, type) in
             """
-            func \(name)(_ op: BetterSync.ComparisonOperator, _ value: \(type)) -> Self {
+            func \(name)(_ op: Vein.ComparisonOperator, _ value: \(type)) -> Self {
                 var copy = self
                 copy.builder = builder.addCheck(op, \"\(name)\", value)
                 return copy
             }
             
-            static func \(name)(_ op: BetterSync.ComparisonOperator, _ value: \(type)) -> Self {
+            static func \(name)(_ op: Vein.ComparisonOperator, _ value: \(type)) -> Self {
                 var copy = Self()
                 copy.builder = copy.builder.addCheck(op, \"\(name)\", value)
                 return copy
@@ -224,7 +224,7 @@ public struct ModelMacro: MemberMacro, ExtensionMacro, PeerMacro {
         }.joined(separator: "\n    ")
         
         let predicateBuilder = """
-        struct _\(className)PredicateHelper: BetterSync.PredicateConstructor {
+        struct _\(className)PredicateHelper: Vein.PredicateConstructor {
             typealias Model = \(className)
             private var builder: PredicateBuilder<\(className)>
             
@@ -245,6 +245,6 @@ public struct ModelMacro: MemberMacro, ExtensionMacro, PeerMacro {
 }
 struct DebugDiag: DiagnosticMessage {
     let message: String
-    var diagnosticID: MessageID { .init(domain: "BetterSyncMacros", id: "debug") }
+    var diagnosticID: MessageID { .init(domain: "VeinMacros", id: "debug") }
     var severity: DiagnosticSeverity { .warning }
 }
