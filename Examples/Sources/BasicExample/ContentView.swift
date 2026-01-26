@@ -19,13 +19,16 @@ struct ContentView: View {
             Text("\(testItems.count)")
             Button("generate") {
                 stop = false
-                for _ in 0...30 {
-                    if stop { return }
-                    do {
-                        try context.insert(Test(flag: Int.random(in: 0...1) > 0, testEncryption: "\(Int.random(in: 0...1000))", randomValue: Int.random(in: 0...1000)))
-                    } catch {
-                        print(error.localizedDescription)
+                Task {
+                    for _ in 0...30 {
+                        if stop { return }
+                        do {
+                            try context.insert(Test(flag: Int.random(in: 0...1) > 0, testEncryption: "\(Int.random(in: 0...1000))", randomValue: Int.random(in: 0...1000)))
+                        } catch {
+                            print(error.localizedDescription)
+                        }
                     }
+                    await Task.yield()
                 }
             }
             Button("printQuery") { print(testItems.map { $0.id }) }

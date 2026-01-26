@@ -44,21 +44,27 @@ public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sen
                 guard let context = model?.context else {
                     return store
                 }
+                
                 do {
                     let result = try context._fetchSingleProperty(field: self)
                     store = result
                     readFromStore = true
                     return result
                 } catch let error as ManagedObjectContextError {
-                    if case let .noSuchTable(_) = error {
+                    if case .noSuchTable = error {
                         return nil
+                    }
+                    if case .unexpectedlyEmptyResult = error {
+                        return store
                     }
                     fatalError(error.localizedDescription)
                 } catch { fatalError(error.localizedDescription) }
             }
         }
         set {
-            readFromStore = true
+            lock.withLock {
+                readFromStore = true
+            }
             
             guard
                 let model = model,
@@ -94,12 +100,6 @@ public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sen
             store = newValue
             model?.notifyOfChanges()
         }
-    }
-    
-    public func setValue(to newValue: T?) {
-        self.store = newValue
-        model?.notifyOfChanges()
-        valueDidChange()
     }
     
     public func setStoreToCapturedState(_ state: Any) {
@@ -167,12 +167,6 @@ public final class Field<T: Persistable>: SCUIPersistedField, @unchecked Sendabl
     public init(wrappedValue: T) {
         self.store = wrappedValue
         self.key = nil
-    }
-    
-    public func setValue(to newValue: T) {
-        self.store = newValue
-        model?.notifyOfChanges()
-        valueDidChange()
     }
     
     // only called from inside setter during lock
