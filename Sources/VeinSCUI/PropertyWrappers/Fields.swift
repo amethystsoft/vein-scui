@@ -62,10 +62,6 @@ public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sen
             }
         }
         set {
-            lock.withLock {
-                readFromStore = true
-            }
-            
             guard
                 let model = model,
                 let context = model.context
@@ -98,6 +94,7 @@ public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sen
     private func setAndNotify(_ newValue: WrappedType) {
         lock.withLock {
             store = newValue
+            readFromStore = true
         }
         model?.notifyOfChanges()
     }
