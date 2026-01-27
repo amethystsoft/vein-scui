@@ -3,8 +3,7 @@ import Vein
 import SwiftCrossUI
 
 @propertyWrapper
-public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sendable, PublishedMarkerProtocol {    
-    public var wasTouched: Bool = false
+public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sendable, PublishedMarkerProtocol {
     
     var upstreamLinkCancellable: SwiftCrossUI.Cancellable?
     public let didChange = Publisher()
@@ -14,6 +13,20 @@ public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sen
     private let lock = NSLock()
     private var store: WrappedType
     private var readFromStore = false
+    
+    private var _wasTouched: Bool = false
+    public private(set) var wasTouched: Bool {
+        get {
+            lock.withLock {
+                _wasTouched
+            }
+        }
+        set {
+            lock.withLock {
+                _wasTouched = newValue
+            }
+        }
+    }
     
     /// ONLY LET MACRO SET
     public var key: String?
@@ -71,9 +84,7 @@ public final class LazyField<T: Persistable>: SCUIPersistedField, @unchecked Sen
             setAndNotify(newValue)
             context._markTouched(model, previouslyMatching: predicateMatches)
             
-            lock.withLock {
-                wasTouched = true
-            }
+            wasTouched = true
         }
     }
     
@@ -121,7 +132,19 @@ public final class Field<T: Persistable>: SCUIPersistedField, @unchecked Sendabl
     public var key: String?
     public weak var model: (any PersistentModel)?
     private let lock = NSLock()
-    public var wasTouched: Bool = false
+    private var _wasTouched: Bool = false
+    public private(set) var wasTouched: Bool {
+        get {
+            lock.withLock {
+                _wasTouched
+            }
+        }
+        set {
+            lock.withLock {
+                _wasTouched = newValue
+            }
+        }
+    }
     
     package var store: T
     
@@ -155,9 +178,7 @@ public final class Field<T: Persistable>: SCUIPersistedField, @unchecked Sendabl
             let predicateMatches = context._prepareForChange(of: model)
             setAndNotify(newValue)
             context._markTouched(model, previouslyMatching: predicateMatches)
-            lock.withLock {
-                self.wasTouched = true
-            }
+            self.wasTouched = true
         }
     }
     
@@ -179,7 +200,7 @@ public final class Field<T: Persistable>: SCUIPersistedField, @unchecked Sendabl
                 fatalError(ManagedObjectContextError.capturedStateApplicationFailed(WrappedType.self, instanceKey).localizedDescription)
             }
             self.store = value
-            self.wasTouched = false
+            self._wasTouched = false
         }
     }
 }

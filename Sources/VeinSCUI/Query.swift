@@ -175,9 +175,9 @@ public struct VeinContainer<Content: View>: View {
             content()
         } else if let container = container {
             ProgressView()
-                .task {
+                .onAppear {
                     do {
-                        try await container.migrate()
+                        try container.migrate()
                     } catch {
                         print(error.localizedDescription)
                     }

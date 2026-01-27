@@ -52,7 +52,7 @@
       "location" : "https://github.com/stackotter/swift-cross-ui.git",
       "state" : {
         "branch" : "main",
-        "revision" : "d30b232d588d38f72ce66359d7c8dba4e361cc3d"
+        "revision" : "33a7aa25e34255e9ab655e8735159645cde2f231"
       }
     },
     {
@@ -163,7 +163,7 @@
       "location" : "https://github.com/amethystsoft/vein",
       "state" : {
         "branch" : "main",
-        "revision" : "a1d8ef618ff2d754f6fc874ce10e58f2feea9085"
+        "revision" : "5f851e62824c4de3c24a5b3c72d6d15a1069fd43"
       }
     },
     {

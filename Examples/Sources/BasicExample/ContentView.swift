@@ -27,8 +27,8 @@ struct ContentView: View {
                         } catch {
                             print(error.localizedDescription)
                         }
+                        await Task.yield()
                     }
-                    await Task.yield()
                 }
             }
             Button("printQuery") { print(testItems.map { $0.id }) }
