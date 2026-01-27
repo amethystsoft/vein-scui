@@ -186,7 +186,7 @@ public struct VeinContainer<Content: View>: View {
                 if let recoverySuggestion = error.recoverySuggestion {
                     Text(recoverySuggestion).foregroundColor(.gray)
                 }
-            } else if let error {#
+            } else if let error {
                 Text("An error occured while migrating database:").font(.title3)
                 Text(error.localizedDescription).foregroundColor(.red)
             } else {
